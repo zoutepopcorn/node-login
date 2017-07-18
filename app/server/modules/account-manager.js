@@ -96,6 +96,7 @@ exports.updateAccount = function(newData, callback)
 		}	else{
 			saltAndHash(newData.pass, function(hash){
 				o.pass = hash;
+				o.api = getRandom(6);
 				accounts.save(o, {safe: true}, function(e) {
 					if (e) callback(e);
 					else callback(null, o);
@@ -204,4 +205,15 @@ var findByMultipleFields = function(a, callback)
 		if (e) callback(e)
 		else callback(null, results)
 	});
+}
+
+var getRandom = function(len) {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < len; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+
 }
