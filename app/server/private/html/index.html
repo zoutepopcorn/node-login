@@ -142,7 +142,7 @@
             $('#' + prop).val(json[prop]);
           }
         }
-        const api = `https://sms.local/${json.user}/${json.api}/bericht` ;
+        const api = `${window.location}/sms/${json.user}/${json.api}/bericht` ;
         $("#api").val(api);
 
         $("#user-tf").val(json.user);
