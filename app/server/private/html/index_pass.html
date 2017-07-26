@@ -11,23 +11,27 @@
     <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
-      <div class="navbar-brand">Sms Panel</div>
+      <div class="navbar-brand">Control Panel</div>
     </div>
     <ul class="nav navbar-nav navbar-right">
       <li>
-        <div class="navbar-btn btn btn-default" id="btn-logout">Uitloggen</div>
+        <div class="navbar-btn btn btn-default" id="btn-logout">Sign Out</div>
       </li>
     </ul>
   </div>
 </nav>
-
-
+    <input type="hidden" value="59709c18258feb1201eadc1e" id="userId">
       <div id="account-form-container" class="center-vertical">
         <form method="post" id="account-form" class="form-horizontal well">
-          <h1>Telefoonnummers</h1>
-          <h6>formaat: 0031612345678</h6>
+          <h2></h2>
+          <h6 id="sub1">Please tell us a little about yourself.</h6>
           <hr>
-
+          <div class="form-group">
+            <label class="control-label col-sm-3">Name</label>
+            <div class="col-sm-9">
+              <input id="name" type="text" name="name" value="" class="form-control">
+            </div>
+          </div>
           <div class="form-group">
             <label class="control-label col-sm-3">Telefoon nrs</label>
             <div class="col-sm-9">
@@ -43,27 +47,22 @@
           </div>
 
           <hr>
-
-          <div class="form-group">
-            <label class="control-label col-sm-3">Api adress</label>
-            <div class="col-sm-9">
-              <input id="api" type="text" name="user" value="" class="form-control" disabled>
-            </div>
-          </div>
-          <hr>
           <h6 id="sub2"></h6>
-
-
           <div class="form-group">
             <label class="control-label col-sm-3">Username</label>
             <div class="col-sm-9">
-              <input id="user-tf" type="text" name="user" value="" class="form-control" disabled>
+              <input id="user-tf" type="text" name="user" value="" class="form-control disabled">
             </div>
           </div>
-
+          <div class="form-group">
+            <label class="control-label col-sm-3">Password</label>
+            <div class="col-sm-9">
+              <input id="pass-tf" type="password" name="pass" value="" class="form-control">
+            </div>
+          </div>
           <hr>
           <div class="form-buttons">
-
+            <button type="button" id="account-form-btn1" class="btn btn-default"></button>
             <button type="submit" id="account-form-btn2" class="btn btn-primary"></button>
           </div>
           <div class="clearfix"></div>
@@ -120,6 +119,9 @@
         </div>
       </div>
 
+
+
+
     <script src="/vendor/jquery-2.2.3.min.js"></script>
     <script src="/vendor/jquery.form.min.js"></script>
 
@@ -142,8 +144,7 @@
             $('#' + prop).val(json[prop]);
           }
         }
-        const api = `https://sms.local/${json.user}/${json.api}/bericht` ;
-        $("#api").val(api);
+
 
         $("#user-tf").val(json.user);
       },

@@ -4,10 +4,6 @@ var MongoDB 	= require('mongodb').Db;
 var Server 		= require('mongodb').Server;
 var moment 		= require('moment');
 
-/*
-	ESTABLISH DATABASE CONNECTION
-*/
-
 var dbName = process.env.DB_NAME || 'node-login';
 var dbHost = process.env.DB_HOST || 'localhost'
 var dbPort = process.env.DB_PORT || 27017;
@@ -76,18 +72,20 @@ exports.addNewAccount = function(newData, callback)
 				newData.pass = hash;
 			// append date stamp when record was created //
 				newData.date = moment().format('MMMM Do YYYY, h:mm:ss a');
+				newData.api  = getRandom(6);
 				accounts.insert(newData, {safe: true}, callback);
 			});
 		}
 	});
 }
 
-exports.updateAccount = function(newData, callback)
-{
+exports.updateAccount = function(newData, callback) {
+	console.log("update account")
 	accounts.findOne({_id:getObjectId(newData.id)}, function(e, o){
-		o.name 		= newData.name;
-		o.email 	= newData.email;
-		o.country 	= newData.country;
+		for(let key in newData) {
+				o[key] = newData[key];
+		}
+
 		if (newData.pass == ''){
 			accounts.save(o, {safe: true}, function(e) {
 				if (e) callback(e);
@@ -96,14 +94,48 @@ exports.updateAccount = function(newData, callback)
 		}	else{
 			saltAndHash(newData.pass, function(hash){
 				o.pass = hash;
-				o.api = getRandom(6);
 				accounts.save(o, {safe: true}, function(e) {
-					if (e) callback(e);
-					else callback(null, o);
+						if (e) callback(e);
+						else callback(null, o);
 				});
 			});
 		}
 	});
+
+/*
+	accounts.findOne({_id:getObjectId(newData.id)}, function(e, o){
+		console.log(o);
+		// console.log(newData.);
+		//o.name 		= newData.name;
+		//o.email 	= newData.email;
+		//o.country 	= newData.country;
+		if (newData.pass == ''){
+			console.log("no pass")
+			console.log(newData)
+			accounts.save(newData, {safe: true}, function(e) {
+				if (e) callback(e);
+				else callback(null, newData);
+			});
+		}	else{
+			saltAndHash(newData.pass, function(hash){
+				newData.pass = hash;
+				console.log(newData)
+				console.log("saving")
+				accounts.save(newData, {safe: true}, function(e) {
+					if (e) {
+						console.log(e)
+						callback(e);
+					} else  {
+						console.log("ok")
+						callback(null, o);
+
+					}
+				});
+			});
+		}
+	});
+
+	*/
 }
 
 exports.updatePassword = function(email, newPass, callback)

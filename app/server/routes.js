@@ -1,10 +1,8 @@
-
 var CT = require('./modules/country-list');
 var AM = require('./modules/account-manager');
 var EM = require('./modules/email-dispatcher');
 
 module.exports = function(app) {
-
 // main login page //
 	app.get('/', function(req, res){
 	// check if the user's credentials are saved in a cookie //
@@ -18,7 +16,6 @@ module.exports = function(app) {
 					res.redirect('/home');
 				}	else{
 					//res.render('login', { title: 'Hello - Please Login To Your Account' });
-
 				}
 			});
 		}
@@ -57,9 +54,11 @@ module.exports = function(app) {
 			res.end('{ login : false }');
 		}	else {
 			console.log(`${__dirname}${req.url}`);
-			const user = req.session.user;
-			console.log(JSON.stringify(user));
-			res.send(`{ user: ${user.user}, url : ${req.url} }`);
+			let user = req.session.user;
+			delete user.pass;
+			let json = JSON.stringify(user);
+			console.log(json);
+			res.send(json);
 		}
 	});
 
@@ -68,14 +67,13 @@ module.exports = function(app) {
 	// if user is not logged-in redirect back to login page //
 			res.redirect('/');
 		}	else{
+			console.log(req.session.user)
 			res.render('home', {
 				title : 'Control Panel',
 				countries : CT,
 				udata : req.session.user
 			});
 		}
-
-
 	});
 
 app.get('/edit', function(req, res) {
@@ -86,9 +84,34 @@ app.get('/edit', function(req, res) {
 			console.log('hi');
 			console.log();
 			res.sendFile(__dirname + '/views/html/home.html');
-
 		}
 });
+
+	app.post('/private/html/', function(req, res) {
+		console.log("/private/html => POST")
+		const body = req.body;
+		body.id = req.session.user._id;
+		console.log(body);
+		//console.log(JSON.stringify(body));
+		if (req.session.user == null){
+			res.redirect('/');
+		}	else{
+
+			AM.updateAccount(body, function(e, o){
+				if (e){
+					res.status(400).send('error-updating-account');
+				}	else{
+					req.session.user = o;
+			// update the user's login cookies if they exists //
+					if (req.cookies.user != undefined && req.cookies.pass != undefined){
+						res.cookie('user', o.user, { maxAge: 900000 });
+						res.cookie('pass', o.pass, { maxAge: 900000 });
+					}
+					res.status(200).send('ok');
+				}
+			});
+		}
+	});
 
 	app.post('/home', function(req, res){
 		const body = req.body;
@@ -133,16 +156,9 @@ app.get('/edit', function(req, res) {
 	});
 
 	app.post('/signup', function(req, res){
-		/*
-		{
-			name 	: req.body['name'],
-			email 	: req.body['email'],
-			user 	: req.body['user'],
-			pass	: req.body['pass'],
-			country : req.body['country']
-		} */
 		console.log("hopla")
-		AM.addNewAccount(res.body, function(e){
+		console.log(req.body);
+		AM.addNewAccount(req.body, function(e){
 			if (e){
 				res.status(400).send(e);
 			}	else{
